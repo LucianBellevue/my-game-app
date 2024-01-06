@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
 function App() {
+  const [inputValue, setInputValue] = useState('');
+  const [outputValue, setOutputValue] = useState('');
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('/api/your-backend-route', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ input: inputValue }),
+      });
+
+      const data = await response.json();
+
+      setOutputValue(data.output);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Text Game</h1>
+      <p>{outputValue}</p>
+      <form onSubmit={handleSubmit}>
+        <input type="text" value={inputValue} onChange={handleInputChange} />
+        <button type="submit">Enter</button>
+      </form>
     </div>
   );
 }
